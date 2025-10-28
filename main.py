@@ -13,6 +13,8 @@ from PySide2.QtCore import Qt
 
 from nukescripts import panels
 
+import expression_curves
+
 class AnimationManagerBeta(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
@@ -281,7 +283,12 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.sineButton.clicked.connect(lambda : self.sinCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
         self.squareButton.clicked.connect(lambda : self.squareCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
         self.sawtoothButton.clicked.connect(lambda : self.sawtoothCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve ))
-        self.bounceButton.clicked.connect(lambda : self.bounceCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve ))
+        #self.bounceButton.clicked.connect(lambda : self.bounceCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve ))
+
+        inherited_curves= expression_curves.Curves(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve)
+        self.bounceButton.clicked.connect(lambda: inherited_curves.compute_bounce_curve(
+            self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+            ))
 
 #addinf functions to buttons and pulldown in custom curve tab
         self.loopButton.clicked.connect(lambda : self.loopAnim(self.combo))
@@ -873,37 +880,6 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
         actKnob.setExpression("((frame+" + paramOffset + ")%" + paramWL + ")/" + paramWL + "*(" + paramMax + "- " + paramMin + ")+" + paramMin )
 
-
-
-#this function creates the bounce function when the button is pressed
-    def bounceCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("abs(sin(pi*(frame+" + paramOffset + ")/" + paramWL + "))*(" + paramMax + "- " + paramMin + ")+ " + paramMin )
 
 panels.registerWidgetAsPanel('AnimationManagerBeta', 'AnimationManager', 'uk.co.thefoundry.NukeTestWindow')
 print("checking")
