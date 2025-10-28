@@ -9,50 +9,72 @@ class Curves:
         self.max_str = max_str
         self.min_str = min_str
 
-    def extract_params(self,k, wavelength_str, offset_str, max_str, min_str):
-
-        parameter_list = []
-
         if wavelength_str.text() == '':
-            param_wl = str(1)
+            self.wavelength_str = str(1)
         else:
-            param_wl = wavelength_str.text()
-        parameter_list.append(param_wl)
+            self.wavelength_str = wavelength_str.text()
 
         if offset_str.text() == '':
-            param_offset = str(0)
+            self.offset_str = str(0)
         else:
-            param_offset = offset_str.text()
-        parameter_list.append(param_offset)
+            self.offset_str = offset_str.text()
 
         if max_str.text() == '':
-            param_max = str(1)
+            self.max_str = str(1)
         else:
-            param_max = max_str.text()
-        parameter_list.append(param_max)
+            self.max_str = max_str.text()
 
         if min_str.text() == '':
-            param_min = str(0)
+            self.min_str = str(0)
         else:
-            param_min = min_str.text()
-        parameter_list.append(param_min)
+            self.min_str = min_str.text()
 
-        return parameter_list
+    def bounce_curve(self):
 
-    def compute_bounce_curve(self,k, wavelength_str, offset_str, max_str, min_str):
-
-        selected_knob = k.currentText()
+        selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
 
-        parameter_list = self.extract_params(k, wavelength_str, offset_str, max_str, min_str)
+        act_knob.setExpression(f"abs(sin(pi*(frame+ {self.offset_str} )/ {self.wavelength_str} ))*("
+                               f" {self.max_str} - {self.min_str} )+ {self.min_str}"
+                               )
 
-        param_wl = parameter_list[0]
-        param_offset = parameter_list[1]
-        param_max = parameter_list[2]
-        param_min = parameter_list[3]
+    def sawtooth_curve(self):
 
-        act_knob.setExpression(
-            "abs(sin(pi*(frame+" + param_offset + ")/" + param_wl + "))*("
-            + param_max + "- " + param_min + ")+ " + param_min
-        )
+        selected_knob = self.k.currentText()
+        act_knob = nuke.selectedNode().knob(selected_knob)
 
+        act_knob.setExpression(f"((frame+ {self.offset_str} )% {self.wavelength_str} )/ {self.wavelength_str}"
+                               f" *( {self.max_str} - {self.min_str} )+ {self.min_str}"
+                               )
+
+    def triangle_curve(self):
+
+        selected_knob = self.k.currentText()
+        act_knob = nuke.selectedNode().knob(selected_knob)
+
+        act_knob.setExpression(f"(asin(sin(2*pi*(frame+ {self.offset_str} )/ {self.wavelength_str}"
+                               f" ))/pi+0.5) *( {self.max_str} - {self.min_str} )+ {self.min_str}"
+                               )
+
+    def random_curve(self):
+
+        selected_knob = self.k.currentText()
+        act_knob = nuke.selectedNode().knob(selected_knob)
+
+        act_knob.setExpression(f"((random(frame+ {self.offset_str} ))) *( {self.max_str}"
+                               f" - {self.min_str} )+ {self.min_str}"
+                               )
+
+    def square_curve(self):
+
+        selected_knob = self.k.currentText()
+        act_knob = nuke.selectedNode().knob(selected_knob)
+
+        act_knob.setExpression(f"int(sin(2*pi*(frame+ {self.offset_str} )/ {self.wavelength_str} )+1)/2 *( {self.max_str} - {self.min_str} )*2+ {self.min_str}")
+
+    def sin_curve(self):
+
+        selected_knob = self.k.currentText()
+        act_knob = nuke.selectedNode().knob(selected_knob)
+
+        act_knob.setExpression(f"(sin(2*pi*(frame+ {self.offset_str} )/ {self.wavelength_str} )+1)/2 *( {self.max_str} - {self.min_str} )+ {self.min_str}")

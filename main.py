@@ -278,17 +278,14 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.loopmylf.returnPressed.connect(lambda : self.offsetAnim(self.combo, self.loopSlider, self.loopmylf, self.loopmyff))
 
 #adding functions to push buttons in expression curve tab
-        self.randomButton.clicked.connect(lambda : self.randomCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
-        self.triangleButton.clicked.connect(lambda : self.triangleCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
-        self.sineButton.clicked.connect(lambda : self.sinCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
-        self.squareButton.clicked.connect(lambda : self.squareCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.myffCurve, self.mylfCurve ))
-        self.sawtoothButton.clicked.connect(lambda : self.sawtoothCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve ))
-        #self.bounceButton.clicked.connect(lambda : self.bounceCurve(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve ))
+        preset_curves= expression_curves.Curves(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve)
+        self.randomButton.clicked.connect(lambda : preset_curves.random_curve())
+        self.triangleButton.clicked.connect(lambda : preset_curves.triangle_curve())
+        self.sineButton.clicked.connect(lambda : preset_curves.sin_curve())
+        self.squareButton.clicked.connect(lambda : preset_curves.square_curve())
+        self.sawtoothButton.clicked.connect(lambda : preset_curves.sawtooth_curve())
+        self.bounceButton.clicked.connect(lambda: preset_curves.bounce_curve())
 
-        inherited_curves= expression_curves.Curves(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve)
-        self.bounceButton.clicked.connect(lambda: inherited_curves.compute_bounce_curve(
-            self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
-            ))
 
 #addinf functions to buttons and pulldown in custom curve tab
         self.loopButton.clicked.connect(lambda : self.loopAnim(self.combo))
@@ -711,7 +708,6 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
         actKnob.setExpression("curve(((frame-" + strLff +"+" + frameOffset + ")%(" + strLlf +"-" + strLff + "-" + paramfirstframeoffset + "+" + paramlastframeoffset + "+1))+" + strLff +" )")
 
-
     def loopAnim(self, k):
 
         loopFirstFrame = self.getFirstFrame(k)
@@ -725,163 +721,4 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
         actKnob.setExpression("curve(((frame-" + strLff +")%(" + strLlf +"-" + strLff +"+1))+" + strLff +" )")
 
-
-#this function creates the sine function when the button is pressed
-    def sinCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("(sin(2*pi*(frame+" + paramOffset + ")/" + paramWL + ")+1)/2 *(" + paramMax + "-" + paramMin + ") + " + paramMin )
-
-
-#this function creates the square function when the button is pressed
-    def squareCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("int(sin(2*pi*(frame+" + paramOffset + ")/" + paramWL + ")+1)/2 *(" + paramMax + "-" + paramMin + ")*2 + " + paramMin )
-
-
-
-#this function creates the random function when the button is pressed
-    def randomCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("((random(frame+" + paramOffset + "))) *(" + paramMax + "-" + paramMin + ") + " + paramMin )
-
-
-#this function creates the triangle function when the button is pressed
-    def triangleCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("(asin(sin(2*pi*(frame+" + paramOffset + ")/" + paramWL + "))/pi+0.5) *(" + paramMax + "-" + paramMin + ") + " + paramMin )
-
-#this function creates the swatooth function when the button is pressed
-    def sawtoothCurve(self, k, WLstr, Offsetstr, maxstr, minstr):
-
-        selKnob = k.currentText()
-
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        if WLstr.text() == '':
-
-            paramWL = str(1)
-        else:
-            paramWL = WLstr.text()
-        if Offsetstr.text() == '':
-            paramOffset = str(0)
-
-        else:
-            paramOffset = Offsetstr.text()
-        if maxstr.text() == '':
-
-            paramMax = str(1)
-        else:
-            paramMax = maxstr.text()
-        if minstr.text() == '':
-
-            paramMin = str(0)
-        else:
-            paramMin = minstr.text()
-
-        actKnob.setExpression("((frame+" + paramOffset + ")%" + paramWL + ")/" + paramWL + "*(" + paramMax + "- " + paramMin + ")+" + paramMin )
-
-
-panels.registerWidgetAsPanel('AnimationManagerBeta', 'AnimationManager', 'uk.co.thefoundry.NukeTestWindow')
-print("checking")
-#panels.registerWidgetAsPanel('AnimationManager', 'Animation Manager', 'panel.id')
 nuke.menu( 'Nuke' ).addCommand('Animation Manager', lambda: AnimationManagerBeta().show())
