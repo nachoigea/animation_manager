@@ -14,6 +14,7 @@ from PySide2.QtCore import Qt
 from nukescripts import panels
 
 import expression_curves
+import utils
 
 class AnimationManagerBeta(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -205,7 +206,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.groupButtons.setLayout(self.buttonsLayout)
 
 #getting the animated knobs of the selected node
-        knoblist = self.getAnimKnobs()
+        knoblist = utils.getAnimKnobs()
         self.combo.addItems(knoblist)
 
     #adding groups to layouts
@@ -242,17 +243,17 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.master_layout.addWidget(self.signLabel)
 
 #getting all the knobs in the selected node
-        allknoblist = self.getAllKnobs()
+        allknoblist = utils.getAllKnobs()
         self.comboCurve.addItems(allknoblist)
 #setting values for the inputs
 
-        isAnim = self.checkAnimation()
+        isAnim = utils.checkAnimation()
         if isAnim == True:
 
-            firstFrame = self.getFirstFrame(self.combo)
+            firstFrame = utils.getFirstFrame(self.combo)
             self.myff.setText(str(firstFrame))
 
-            lastFrame = self.getLastFrame(self.combo)
+            lastFrame = utils.getLastFrame(self.combo)
             self.mylf.setText(str(lastFrame))
 
         self.offsetValue.setText(str(0))
@@ -297,82 +298,32 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
         self.refreshKnob(self.combo)
 
-
-#this functions sets an integer to 1 if the substring is found in the sring
-    def findStringCurve(self, currentKnob, searchString):
-
-        stringFound = 0
-        origExpression = ''
-        index = 0
-        if currentKnob.hasExpression():
-            origExpression = currentKnob.animation(index).expression()
-
-        if (origExpression.find(searchString) != -1):
-            stringFound = 1
-        else:
-            stringFound = 0
-
-        return stringFound
-
-#this function checks if there is a knob animated in the selected node
-    def checkAnimation(self):
-
-        mynode = nuke.selectedNode()
-
-        knobList = []
-        animKnobList = []
-        count = 0
-        for i in mynode.knobs():
-            knobList.append(i)
-            if mynode.knob(knobList[count]).isAnimated():
-                animKnobList.append(i)
-            count = count + 1
-
-        isAnimFun = bool(animKnobList)
-        return isAnimFun
-
-#this function gets all the animated knobs in the selected node
-    def getAnimKnobs(self):
-
-        mynode = nuke.selectedNode()
-
-        knobList = []
-        animKnobList = []
-        count = 0
-        for i in mynode.knobs():
-            knobList.append(i)
-            if mynode.knob(knobList[count]).isAnimated():
-                animKnobList.append(i)
-            count = count + 1
-
-        return animKnobList
-
 #this functions updates the panel when a different node is selected from the original
     def refreshFunction(self):
         # reuse existing logic to get knobs of current selected node.
         self.combo.clear()
-        self.combo.addItems(self.getAnimKnobs())
+        self.combo.addItems(utils.getAnimKnobs())
 
-        isAnim = self.checkAnimation()
+        isAnim = utils.checkAnimation()
 
         self.myff.clear()
         self.mylf.clear()
 
         if isAnim == True:
 
-            firstFrame = self.getFirstFrame(self.combo)
+            firstFrame = utils.getFirstFrame(self.combo)
             self.myff.setText(str(firstFrame))
 
-            lastFrame = self.getLastFrame(self.combo)
+            lastFrame = utils.getLastFrame(self.combo)
             self.mylf.setText(str(lastFrame))
 
         self.comboCurve.clear()
-        self.comboCurve.addItems(self.getAllKnobs())
+        self.comboCurve.addItems(utils.getAllKnobs())
 
 #this function hides the parameters in the custom curve tab if the knob selected in the pulldown has an expression and shows them if it doesn't
     def refreshKnob(self, k):
 
-        isAnim = self.checkAnimation()
+        isAnim = utils.checkAnimation()
 
         self.myff.clear()
         self.mylf.clear()
@@ -380,23 +331,23 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         selKnob = k.currentText()
         actKnob = nuke.selectedNode().knob(selKnob)
 
-        isString = self.findStringCurve(actKnob, 'curve')
+        isString = utils.findStringCurve(actKnob, 'curve')
 
         if isAnim == True:
             if actKnob.hasExpression() == False:
 
-                firstFrame = self.getFirstFrame(self.combo)
+                firstFrame = utils.getFirstFrame(self.combo)
                 self.myff.setText(str(firstFrame))
 
-                lastFrame = self.getLastFrame(self.combo)
+                lastFrame = utils.getLastFrame(self.combo)
                 self.mylf.setText(str(lastFrame))
 
             elif actKnob.hasExpression() == True and isString == 1:
 
-                firstFrame = self.getFirstFrame(self.combo)
+                firstFrame = utils.getFirstFrame(self.combo)
                 self.myff.setText(str(firstFrame))
 
-                lastFrame = self.getLastFrame(self.combo)
+                lastFrame = utils.getLastFrame(self.combo)
                 self.mylf.setText(str(lastFrame))
 
         if actKnob.hasExpression() == True and isString == 0:
@@ -424,100 +375,10 @@ class AnimationManagerBeta(QtWidgets.QWidget):
             self.loopGroupOffset.show()
             self.loopGroup2.show()
 
-#this function gets the first frame of the animation in the selected knob
-    def getFirstFrame(self, k):
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        xValueList = []
-        #if actKnob.hasExpression() == False:
-        #print "This knob has an expression in getFirstFrame"
-        animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
-
-        isString = self.findStringCurve(actKnob, 'curve')
-
-        if actKnob.hasExpression() == False:
-            for key in animCurve.keys():
-                xValue = key.x
-                xValueList.append(xValue)
-
-            return xValueList[0]
-
-        if actKnob.hasExpression() == True  and isString == 1:
-            for key in animCurve.keys():
-                xValue = key.x
-                xValueList.append(xValue)
-
-            return xValueList[0]
-
-#this function gets the last frame of the animation in the selected knob
-    def getLastFrame(self, k):
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        #if actKnob.hasExpression() == False:
-        animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
-        xValueList = []
-
-        isString = self.findStringCurve(actKnob, 'curve')
-
-        if actKnob.hasExpression() == False:
-            for key in animCurve.keys():
-                xValue = key.x
-                xValueList.append(xValue)
-
-            return xValueList[-1]
-
-        if actKnob.hasExpression() == True   and isString == 1:
-            for key in animCurve.keys():
-                xValue = key.x
-                xValueList.append(xValue)
-
-            return xValueList[-1]
-
-#this function gets all the knobs in the selected node
-    def getAllKnobs(self):
-
-        mynode = nuke.selectedNode()
-
-        knobList = []
-        animKnobList = []
-        delList = ['Mask','label', 'note_font','note_font_size','note_font_color','hide_input','cached','disable','dope_sheet','bookmark','postage_stamp','postage_stamp_frame','lifetimeStart','lifetimeEnd','useLifetime','tile_color','gl_color','name','help','knobChanged','onDestroy','updateUI','rootNodeUpdated','dope_sheet','icon','panel','indicators','onCreate','autolabel']
-        count = 0
-
-        for i in mynode.knobs():
-            knobList.append(i)
-            count = count + 1
-
-        knobList.sort()
-
-        for i in range(len(delList)):
-            if delList[i] in knobList:
-
-                knobList.pop(knobList.index(delList[i]))
-
-        return knobList
-
-#this function gets all the keyframes of the selected animated knob
-    def getAnimKeyFrame(self, k):
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-        animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
-        xValueList = []
-
-        for key in animCurve.keys():
-            xValue = key.x
-            xValueList.append(xValue)
-
-        return xValueList
-
 #this function adds the introduced offset to the whole custom curve
     def addOffsetEdit(self,k, offsetSliderFun):
 
-            keyList = self.getAnimKeyFrame(k)
+            keyList = utils.getAnimKeyFrame(k)
             if offsetSliderFun.text():
                 addedOffset = offsetSliderFun.text()
             else:
@@ -556,7 +417,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 #this function multiplies all y values of the keyframes with the inctroduced factor
     def multiplyEdit(self,k, multiplyFun):
 
-            keyList = self.getAnimKeyFrame(k)
+            keyList = utils.getAnimKeyFrame(k)
 
             if multiplyFun.text():
                 addedMult = multiplyFun.text()
@@ -596,7 +457,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 #this function changes the first keyframe while adapting the rest of the keyframes of the curve
     def adaptAnimFF(self, myff,k):
 
-        keyList = self.getAnimKeyFrame(k)
+        keyList = utils.getAnimKeyFrame(k)
 
         min_set_frame = myff.text()
         #max_set_frame = mylf.text()
@@ -639,7 +500,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 #this function changes the last keyframe while adapting the rest of the keyframes of the curve
     def adaptAnimLF(self, mylf,k):
 
-        keyList = self.getAnimKeyFrame(k)
+        keyList = utils.getAnimKeyFrame(k)
 
         #min_set_frame = myff.text()
         max_set_frame = mylf.text()
@@ -681,8 +542,8 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
     def offsetAnim(self, k, loopOffset, lastframeoffset, firstframeoffset):
 
-        loopFirstFrame = self.getFirstFrame(k)
-        loopLastFrame = self.getLastFrame(k)
+        loopFirstFrame = utils.getFirstFrame(k)
+        loopLastFrame = utils.getLastFrame(k)
 
         selKnob = k.currentText()
         actKnob = nuke.selectedNode().knob(selKnob)
@@ -710,8 +571,8 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
     def loopAnim(self, k):
 
-        loopFirstFrame = self.getFirstFrame(k)
-        loopLastFrame = self.getLastFrame(k)
+        loopFirstFrame = utils.getFirstFrame(k)
+        loopLastFrame = utils.getLastFrame(k)
 
         selKnob = k.currentText()
         actKnob = nuke.selectedNode().knob(selKnob)
