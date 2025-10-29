@@ -6,17 +6,14 @@
 import nuke
 import PySide2.QtCore as QtCore
 import PySide2.QtWidgets as QtWidgets
-import PySide2.QtGui as QtGui
-from PySide2.QtCore import Qt
 
-
-#from nukescripts import panels
+from nukescripts.panels import registerWidgetAsPanel
 
 import expression_curves
 import utils
 import modify_curves
 
-class AnimationManagerBeta(QtWidgets.QWidget):
+class AnimationManager(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
 
@@ -32,106 +29,106 @@ class AnimationManagerBeta(QtWidgets.QWidget):
     #knob group
         self.label = QtWidgets.QLabel("Knob")
         self.group1 = QtWidgets.QGroupBox("Select animated knob")
-        self.refreshButton = QtWidgets.QPushButton("Update node")
+        self.refresh_button = QtWidgets.QPushButton("Update node")
     #frame range group
         self.group2 = QtWidgets.QGroupBox("New frame range")
-        self.myff = QtWidgets.QLineEdit()
-        self.myff.setAlignment(QtCore.Qt.AlignLeft)
-        self.myff.setFixedWidth(50)
-        self.mylf = QtWidgets.QLineEdit()
-        self.mylf.setFixedWidth(50)
-        self.labelMyff = QtWidgets.QLabel("First frame")
-        self.labelMyff.setIndent(1)
-        self.labelMylf = QtWidgets.QLabel("Last frame")
+        self.my_first_frame = QtWidgets.QLineEdit()
+        self.my_first_frame.setAlignment(QtCore.Qt.AlignLeft)
+        self.my_first_frame.setFixedWidth(50)
+        self.my_last_frame = QtWidgets.QLineEdit()
+        self.my_last_frame.setFixedWidth(50)
+        self.label_my_first_frame = QtWidgets.QLabel("First frame")
+        self.label_my_first_frame.setIndent(1)
+        self.label_my_last_frame = QtWidgets.QLabel("Last frame")
     #offset group
-        self.offsetGroup = QtWidgets.QGroupBox("Keyframes offset")
-        self.offsetLabel = QtWidgets.QLabel("Offset")
-        self.offsetValue = QtWidgets.QLineEdit()
-        self.offsetValue.setFixedWidth(50)
+        self.offset_group = QtWidgets.QGroupBox("Keyframes offset")
+        self.offset_label = QtWidgets.QLabel("Offset")
+        self.offset_value = QtWidgets.QLineEdit()
+        self.offset_value.setFixedWidth(50)
 
     #multiply group
-        self.multGroup = QtWidgets.QGroupBox("Keyframes multiply")
-        self.multLabel = QtWidgets.QLabel("Multiply")
-        self.multValue = QtWidgets.QLineEdit()
-        self.multValue.setFixedWidth(50)
+        self.mult_group = QtWidgets.QGroupBox("Keyframes multiply")
+        self.mult_label = QtWidgets.QLabel("Multiply")
+        self.mult_value = QtWidgets.QLineEdit()
+        self.mult_value.setFixedWidth(50)
 
     #loop group
-        self.loopGroup = QtWidgets.QGroupBox("")
-        self.loopGroupOffset = QtWidgets.QGroupBox("")
-        self.loopGroup2 = QtWidgets.QGroupBox("Loop Animation")
-        self.loopButton = QtWidgets.QPushButton("Loop Animation")
-        self.loopSlider = QtWidgets.QLineEdit()
-        self.loopSlider = QtWidgets.QLineEdit()
-        self.loopSlider.setFixedWidth(50)
-        self.loopSliderLabel = QtWidgets.QLabel("Offset Animation")
-        self.loopSliderLabel.setIndent(1)
-        self.loopmyff = QtWidgets.QLineEdit()
-        self.loopmyff.setAlignment(QtCore.Qt.AlignLeft)
-        self.loopmyff.setFixedWidth(50)
-        self.loopmylf = QtWidgets.QLineEdit()
-        self.loopmylf.setFixedWidth(50)
-        self.looplabelMyff = QtWidgets.QLabel("Offset Loop First frame")
-        self.looplabelMyff.setIndent(1)
-        self.looplabelMylf = QtWidgets.QLabel("Offset Loop Last frame")
+        self.loop_group = QtWidgets.QGroupBox("")
+        self.loop_group_offset = QtWidgets.QGroupBox("")
+        self.loop_group2 = QtWidgets.QGroupBox("Loop Animation")
+        self.loop_button = QtWidgets.QPushButton("Loop Animation")
+        self.loop_slider = QtWidgets.QLineEdit()
+        self.loop_slider = QtWidgets.QLineEdit()
+        self.loop_slider.setFixedWidth(50)
+        self.loop_slider_label = QtWidgets.QLabel("Offset Animation")
+        self.loop_slider_label.setIndent(1)
+        self.loop_my_first_frame = QtWidgets.QLineEdit()
+        self.loop_my_first_frame.setAlignment(QtCore.Qt.AlignLeft)
+        self.loop_my_first_frame.setFixedWidth(50)
+        self.loop_my_last_frame = QtWidgets.QLineEdit()
+        self.loop_my_last_frame.setFixedWidth(50)
+        self.loop_label_my_first_frame = QtWidgets.QLabel("Offset Loop First frame")
+        self.loop_label_my_first_frame.setIndent(1)
+        self.loop_label_my_last_frame = QtWidgets.QLabel("Offset Loop Last frame")
     #creation of layouts
         self.layout1 = QtWidgets.QVBoxLayout()
         self.layout1.setAlignment(QtCore.Qt.AlignTop)
         self.in_layout = QtWidgets.QHBoxLayout()
-        self.frameRangeLayout = QtWidgets.QHBoxLayout()
-        self.frameRangeLayout.addStretch(2)
-        self.frameRangeLayout.setAlignment(QtCore.Qt.AlignLeft)
-        self.offsetLayout = QtWidgets.QHBoxLayout()
-        self.multLayout = QtWidgets.QHBoxLayout()
-        self.loopLayout = QtWidgets.QHBoxLayout()
-        self.loopOffsetLayout = QtWidgets.QHBoxLayout()
-        self.loopOffsetLayout.addStretch(2)
-        self.loopOffsetLayout.setAlignment(QtCore.Qt.AlignLeft)
-        self.loopframeRangeLayout = QtWidgets.QHBoxLayout()
-        self.loopframeRangeLayout.addStretch(2)
-        self.loopframeRangeLayout.setAlignment(QtCore.Qt.AlignLeft)
+        self.frame_range_layout = QtWidgets.QHBoxLayout()
+        self.frame_range_layout.addStretch(2)
+        self.frame_range_layout.setAlignment(QtCore.Qt.AlignLeft)
+        self.offset_layout = QtWidgets.QHBoxLayout()
+        self.mult_layout = QtWidgets.QHBoxLayout()
+        self.loop_layout = QtWidgets.QHBoxLayout()
+        self.loop_offset_layout = QtWidgets.QHBoxLayout()
+        self.loop_offset_layout.addStretch(2)
+        self.loop_offset_layout.setAlignment(QtCore.Qt.AlignLeft)
+        self.loop_frame_range_layout = QtWidgets.QHBoxLayout()
+        self.loop_frame_range_layout.addStretch(2)
+        self.loop_frame_range_layout.setAlignment(QtCore.Qt.AlignLeft)
     #adding groups to layouts
         self.layout1.addWidget(self.group1)
         self.layout1.addWidget(self.group2)
-        self.layout1.addWidget(self.offsetGroup)
-        self.layout1.addWidget(self.multGroup)
-        self.layout1.addWidget(self.loopGroup2)
-        self.layout1.addWidget(self.loopGroup)
-        self.layout1.addWidget(self.loopGroupOffset)
+        self.layout1.addWidget(self.offset_group)
+        self.layout1.addWidget(self.mult_group)
+        self.layout1.addWidget(self.loop_group2)
+        self.layout1.addWidget(self.loop_group)
+        self.layout1.addWidget(self.loop_group_offset)
 
         #adding graphic elements to layouts
         self.in_layout.addWidget(self.label)
         self.in_layout.addWidget(self.combo)
-        self.in_layout.addWidget(self.refreshButton)
+        self.in_layout.addWidget(self.refresh_button)
         self.group1.setLayout(self.in_layout)
 
-        self.loopOffsetLayout.addWidget(self.loopSliderLabel)
-        self.loopOffsetLayout.addWidget(self.loopSlider)
-        self.loopGroupOffset.setLayout(self.loopOffsetLayout)
+        self.loop_offset_layout.addWidget(self.loop_slider_label)
+        self.loop_offset_layout.addWidget(self.loop_slider)
+        self.loop_group_offset.setLayout(self.loop_offset_layout)
 
-        self.loopframeRangeLayout.addWidget(self.looplabelMyff)
-        self.loopframeRangeLayout.addWidget(self.loopmyff)
-        self.loopframeRangeLayout.addWidget(self.looplabelMylf)
-        self.loopframeRangeLayout.addWidget(self.loopmylf)
-        self.loopGroup.setLayout(self.loopframeRangeLayout)
+        self.loop_frame_range_layout.addWidget(self.loop_label_my_first_frame)
+        self.loop_frame_range_layout.addWidget(self.loop_my_first_frame)
+        self.loop_frame_range_layout.addWidget(self.loop_label_my_last_frame)
+        self.loop_frame_range_layout.addWidget(self.loop_my_last_frame)
+        self.loop_group.setLayout(self.loop_frame_range_layout)
 
-        self.frameRangeLayout.addWidget(self.labelMyff)
-        self.frameRangeLayout.addWidget(self.myff)
-        self.frameRangeLayout.addWidget(self.labelMylf)
-        self.frameRangeLayout.addWidget(self.mylf)
-        self.group2.setLayout(self.frameRangeLayout)
+        self.frame_range_layout.addWidget(self.label_my_first_frame)
+        self.frame_range_layout.addWidget(self.my_first_frame)
+        self.frame_range_layout.addWidget(self.label_my_last_frame)
+        self.frame_range_layout.addWidget(self.my_last_frame)
+        self.group2.setLayout(self.frame_range_layout)
 
-        self.offsetLayout.addWidget(self.offsetLabel)
-        self.offsetLayout.addWidget(self.offsetValue)
-        self.offsetGroup.setLayout(self.offsetLayout)
+        self.offset_layout.addWidget(self.offset_label)
+        self.offset_layout.addWidget(self.offset_value)
+        self.offset_group.setLayout(self.offset_layout)
 
-        self.multLayout.addWidget(self.multLabel)
-        self.multLayout.addWidget(self.multValue)
-        self.multLayout.addWidget(self.loopButton)
-        self.multGroup.setLayout(self.multLayout)
+        self.mult_layout.addWidget(self.mult_label)
+        self.mult_layout.addWidget(self.mult_value)
+        self.mult_layout.addWidget(self.loop_button)
+        self.mult_group.setLayout(self.mult_layout)
 
-        self.loopLayout.addWidget(self.loopButton)
+        self.loop_layout.addWidget(self.loop_button)
 
-        self.loopGroup2.setLayout(self.loopLayout)
+        self.loop_group2.setLayout(self.loop_layout)
 
     #adding tab to layout
         self.tab1.setLayout(self.layout1)
@@ -139,84 +136,84 @@ class AnimationManagerBeta(QtWidgets.QWidget):
 
 #expression curve tab
     #creation of the graphic elements
-        self.comboCurve = QtWidgets.QComboBox()
-        self.comboCurve.setFixedWidth(150)
-        self.labelCurve = QtWidgets.QLabel("Knob")
-        self.group1Curve = QtWidgets.QGroupBox("Select knob to animate")
+        self.combo_curve = QtWidgets.QComboBox()
+        self.combo_curve.setFixedWidth(150)
+        self.label_curve = QtWidgets.QLabel("Knob")
+        self.group1_curve = QtWidgets.QGroupBox("Select knob to animate")
 
-        self.group2Curve = QtWidgets.QGroupBox("Set parameters")
-        self.wavelengthLabel = QtWidgets.QLabel("Wavelength")
-        self.wavelengthValue = QtWidgets.QLineEdit()
-        self.wavelengthValue.setFixedWidth(50)
+        self.group2_curve = QtWidgets.QGroupBox("Set parameters")
+        self.wavelength_label = QtWidgets.QLabel("Wavelength")
+        self.wavelength_value = QtWidgets.QLineEdit()
+        self.wavelength_value.setFixedWidth(50)
 
-        self.groupOffsetCurve = QtWidgets.QGroupBox()
-        self.offsetLabelCurve = QtWidgets.QLabel("Frame Offset")
-        self.offsetValueCurve = QtWidgets.QLineEdit()
-        self.offsetValueCurve.setFixedWidth(50)
+        self.group_offset_curve = QtWidgets.QGroupBox()
+        self.offset_label_curve = QtWidgets.QLabel("Frame Offset")
+        self.offset_valueCurve = QtWidgets.QLineEdit()
+        self.offset_valueCurve.setFixedWidth(50)
 
-        self.groupHeight = QtWidgets.QGroupBox()
-        self.myffCurve = QtWidgets.QLineEdit()
-        self.myffCurve.setFixedWidth(50)
-        self.mylfCurve = QtWidgets.QLineEdit()
-        self.mylfCurve.setFixedWidth(50)
-        self.labelMyffCurve = QtWidgets.QLabel("Minimum value")
-        self.labelMyffCurve.setIndent(1)
-        self.labelMylfCurve = QtWidgets.QLabel("Maximum value")
+        self.group_height = QtWidgets.QGroupBox()
+        self.my_first_frameCurve = QtWidgets.QLineEdit()
+        self.my_first_frameCurve.setFixedWidth(50)
+        self.my_last_frameCurve = QtWidgets.QLineEdit()
+        self.my_last_frameCurve.setFixedWidth(50)
+        self.label_my_first_frameCurve = QtWidgets.QLabel("Minimum value")
+        self.label_my_first_frameCurve.setIndent(1)
+        self.label_my_last_frameCurve = QtWidgets.QLabel("Maximum value")
     #creation of buttons
-        self.groupButtons = QtWidgets.QGroupBox("Generate the curve")
-        self.randomButton = QtWidgets.QPushButton("Random")
-        self.triangleButton = QtWidgets.QPushButton("Triangle")
-        self.sineButton = QtWidgets.QPushButton("Sine")
-        self.squareButton = QtWidgets.QPushButton("Square")
-        self.sawtoothButton = QtWidgets.QPushButton("Sawtooth")
-        self.bounceButton = QtWidgets.QPushButton("Bounce")
+        self.group_buttons = QtWidgets.QGroupBox("Generate the curve")
+        self.random_button = QtWidgets.QPushButton("Random")
+        self.triangle_button = QtWidgets.QPushButton("Triangle")
+        self.sine_button = QtWidgets.QPushButton("Sine")
+        self.square_button = QtWidgets.QPushButton("Square")
+        self.sawtooth_button = QtWidgets.QPushButton("Sawtooth")
+        self.bounce_button = QtWidgets.QPushButton("Bounce")
     #creation of layouts
-        self.in_layoutCurve = QtWidgets.QHBoxLayout()
-        self.in_layoutCurve.addWidget(self.labelCurve)
-        self.in_layoutCurve.addWidget(self.comboCurve)
-        self.group1Curve.setLayout(self.in_layoutCurve)
-        self.in_layoutCurve.setAlignment(QtCore.Qt.AlignTop)
+        self.in_layout_curve = QtWidgets.QHBoxLayout()
+        self.in_layout_curve.addWidget(self.label_curve)
+        self.in_layout_curve.addWidget(self.combo_curve)
+        self.group1_curve.setLayout(self.in_layout_curve)
+        self.in_layout_curve.setAlignment(QtCore.Qt.AlignTop)
     #adding graphic elements to layouts
-        self.wavelengthLayout = QtWidgets.QHBoxLayout()
-        self.wavelengthLayout.addWidget(self.wavelengthLabel)
-        self.wavelengthLayout.addWidget(self.wavelengthValue)
+        self.wavelength_layout = QtWidgets.QHBoxLayout()
+        self.wavelength_layout.addWidget(self.wavelength_label)
+        self.wavelength_layout.addWidget(self.wavelength_value)
 
-        self.offsetCurveLayout = QtWidgets.QHBoxLayout()
-        self.offsetCurveLayout.addWidget(self.offsetLabelCurve)
-        self.offsetCurveLayout.addWidget(self.offsetValueCurve)
-        #self.offsetCurveLayout.addWidget(self.offsetSliderCurve)
+        self.offset_curve_layout = QtWidgets.QHBoxLayout()
+        self.offset_curve_layout.addWidget(self.offset_label_curve)
+        self.offset_curve_layout.addWidget(self.offset_valueCurve)
+        #self.offset_curve_layout.addWidget(self.offsetSliderCurve)
 
-        self.heightCurveLayout = QtWidgets.QHBoxLayout()
-        self.heightCurveLayout.addWidget(self.labelMyffCurve)
-        self.heightCurveLayout.addWidget(self.myffCurve)
-        self.heightCurveLayout.addWidget(self.labelMylfCurve)
-        self.heightCurveLayout.addWidget(self.mylfCurve)
+        self.height_curve_cayout = QtWidgets.QHBoxLayout()
+        self.height_curve_cayout.addWidget(self.label_my_first_frameCurve)
+        self.height_curve_cayout.addWidget(self.my_first_frameCurve)
+        self.height_curve_cayout.addWidget(self.label_my_last_frameCurve)
+        self.height_curve_cayout.addWidget(self.my_last_frameCurve)
 
-        self.buttonsLayout = QtWidgets.QGridLayout()
-        self.buttonsLayout.addWidget(self.randomButton, 0,0)
-        self.buttonsLayout.addWidget(self.triangleButton, 0,1)
-        self.buttonsLayout.addWidget(self.sineButton,0,2)
-        self.buttonsLayout.addWidget(self.squareButton,1,0)
-        self.buttonsLayout.addWidget(self.sawtoothButton,1,1)
-        self.buttonsLayout.addWidget(self.bounceButton,1,2)
+        self.buttons_layout = QtWidgets.QGridLayout()
+        self.buttons_layout.addWidget(self.random_button, 0,0)
+        self.buttons_layout.addWidget(self.triangle_button, 0,1)
+        self.buttons_layout.addWidget(self.sine_button,0,2)
+        self.buttons_layout.addWidget(self.square_button,1,0)
+        self.buttons_layout.addWidget(self.sawtooth_button,1,1)
+        self.buttons_layout.addWidget(self.bounce_button,1,2)
 
-        self.group2Curve.setLayout(self.wavelengthLayout)
-        self.groupOffsetCurve.setLayout(self.offsetCurveLayout)
-        self.groupHeight.setLayout(self.heightCurveLayout)
-        self.groupButtons.setLayout(self.buttonsLayout)
+        self.group2_curve.setLayout(self.wavelength_layout)
+        self.group_offset_curve.setLayout(self.offset_curve_layout)
+        self.group_height.setLayout(self.height_curve_cayout)
+        self.group_buttons.setLayout(self.buttons_layout)
 
 #getting the animated knobs of the selected node
-        knoblist = utils.get_anim_knobs()
-        self.combo.addItems(knoblist)
+        knob_list = utils.get_anim_knobs()
+        self.combo.addItems(knob_list)
 
     #adding groups to layouts
         self.layout2 = QtWidgets.QVBoxLayout()
-        self.layout2.addWidget(self.group1Curve)
+        self.layout2.addWidget(self.group1_curve)
 
-        self.layout2.addWidget(self.group2Curve)
-        self.layout2.addWidget(self.groupOffsetCurve)
-        self.layout2.addWidget(self.groupHeight)
-        self.layout2.addWidget(self.groupButtons)
+        self.layout2.addWidget(self.group2_curve)
+        self.layout2.addWidget(self.group_offset_curve)
+        self.layout2.addWidget(self.group_height)
+        self.layout2.addWidget(self.group_buttons)
 
         self.layout2.addStretch(2)
         self.tab2.setLayout(self.layout2)
@@ -225,174 +222,175 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.tab.addTab(self.tab1, "Adapt custom curve")
         self.tab.addTab(self.tab2, "Curve presets")
 
-        self.titleLabel = QtWidgets.QLabel("Press to update the node")
-        self.spaceLabel = QtWidgets.QLabel(" ")
-        self.spaceLabel2 = QtWidgets.QLabel(" ")
-        self.tabsLabel = QtWidgets.QLabel("Generate or modify your animation curves")
-        self.signLabel = QtWidgets.QLabel("by Nacho Igea")
+        self.title_label = QtWidgets.QLabel("Press to update the node")
+        self.space_label = QtWidgets.QLabel(" ")
+        self.space_label2 = QtWidgets.QLabel(" ")
+        self.tabs_label = QtWidgets.QLabel("Generate or modify your animation curves")
+        self.sign_label = QtWidgets.QLabel("by Nacho Igea")
 
         self.master_layout = QtWidgets.QVBoxLayout()
-        self.master_layout.addWidget(self.titleLabel)
-        self.master_layout.addWidget(self.spaceLabel)
-        self.master_layout.addWidget(self.refreshButton)
-        self.master_layout.addWidget(self.spaceLabel2)
-        self.master_layout.addWidget(self.tabsLabel)
-        self.master_layout.addWidget(self.spaceLabel2)
+        self.master_layout.addWidget(self.title_label)
+        self.master_layout.addWidget(self.space_label)
+        self.master_layout.addWidget(self.refresh_button)
+        self.master_layout.addWidget(self.space_label2)
+        self.master_layout.addWidget(self.tabs_label)
+        self.master_layout.addWidget(self.space_label2)
         self.master_layout.addWidget(self.tab)
-        self.master_layout.addWidget(self.spaceLabel2)
-        self.master_layout.addWidget(self.signLabel)
+        self.master_layout.addWidget(self.space_label2)
+        self.master_layout.addWidget(self.sign_label)
 
 #getting all the knobs in the selected node
-        allknoblist = utils.get_all_knobs()
-        self.comboCurve.addItems(allknoblist)
+        all_knob_list = utils.get_all_knobs()
+        self.combo_curve.addItems(all_knob_list)
 #setting values for the inputs
 
-        isAnim = utils.check_animation()
-        if isAnim:
+        is_anim = utils.check_animation()
+        if is_anim:
 
-            firstFrame = utils.get_first_frame(self.combo)
-            self.myff.setText(str(firstFrame))
+            first_frame = utils.get_first_frame(self.combo)
+            self.my_first_frame.setText(str(first_frame))
 
-            lastFrame = utils.get_last_frame(self.combo)
-            self.mylf.setText(str(lastFrame))
+            last_frame = utils.get_last_frame(self.combo)
+            self.my_last_frame.setText(str(last_frame))
 
-        self.offsetValue.setText(str(0))
-        self.multValue.setText(str(1))
+        self.offset_value.setText(str(0))
+        self.mult_value.setText(str(1))
 
-        self.loopmyff.setText(str(0))
-        self.loopmylf.setText(str(0))
-        self.loopSlider.setText(str(0))
+        self.loop_my_first_frame.setText(str(0))
+        self.loop_my_last_frame.setText(str(0))
+        self.loop_slider.setText(str(0))
 
-        self.wavelengthValue.setText(str(10))
-        self.offsetValueCurve.setText(str(0))
-        self.myffCurve.setText(str(0))
-        self.mylfCurve.setText(str(1))
+        self.wavelength_value.setText(str(10))
+        self.offset_valueCurve.setText(str(0))
+        self.my_first_frameCurve.setText(str(0))
+        self.my_last_frameCurve.setText(str(1))
 
 #adding functions to text boxes in custom curves tab
-        self.offsetValue.returnPressed.connect(lambda : modify_curves.add_offset_edit(self.combo, self.offsetValue))
-        self.multValue.returnPressed.connect(lambda : modify_curves.multiply_edit(self.combo, self.multValue))
-        self.myff.returnPressed.connect(lambda : modify_curves.adapt_anim_first_frame(self.myff, self.combo))
-        self.mylf.returnPressed.connect(lambda : modify_curves.adapt_anim_last_frame(self.mylf, self.combo))
+        self.offset_value.returnPressed.connect(lambda : modify_curves.add_offset_edit(self.combo, self.offset_value))
+        self.mult_value.returnPressed.connect(lambda : modify_curves.multiply_edit(self.combo, self.mult_value))
+        self.my_first_frame.returnPressed.connect(lambda : modify_curves.adapt_anim_first_frame(self.my_first_frame, self.combo))
+        self.my_last_frame.returnPressed.connect(lambda : modify_curves.adapt_anim_last_frame(self.my_last_frame, self.combo))
 
-        self.loopSlider.returnPressed.connect(lambda : modify_curves.offset_anim(
-            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        self.loop_slider.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loop_slider, self.loop_my_last_frame, self.loop_my_first_frame
         ))
-        self.loopmyff.returnPressed.connect(lambda : modify_curves.offset_anim(
-            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        self.loop_my_first_frame.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loop_slider, self.loop_my_last_frame, self.loop_my_first_frame
         ))
-        self.loopmylf.returnPressed.connect(lambda : modify_curves.offset_anim(
-            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        self.loop_my_last_frame.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loop_slider, self.loop_my_last_frame, self.loop_my_first_frame
         ))
 
 #adding functions to push buttons in expression curve tab
         preset_curves= expression_curves.Curves(
-            self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+            self.combo_curve, self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         )
-        self.randomButton.clicked.connect(lambda : preset_curves.random_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.random_button.clicked.connect(lambda : preset_curves.random_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
-        self.triangleButton.clicked.connect(lambda : preset_curves.triangle_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.triangle_button.clicked.connect(lambda : preset_curves.triangle_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
-        self.sineButton.clicked.connect(lambda : preset_curves.sin_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.sine_button.clicked.connect(lambda : preset_curves.sin_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
-        self.squareButton.clicked.connect(lambda : preset_curves.square_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.square_button.clicked.connect(lambda : preset_curves.square_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
-        self.sawtoothButton.clicked.connect(lambda : preset_curves.sawtooth_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.sawtooth_button.clicked.connect(lambda : preset_curves.sawtooth_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
-        self.bounceButton.clicked.connect(lambda: preset_curves.bounce_curve(
-            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        self.bounce_button.clicked.connect(lambda: preset_curves.bounce_curve(
+            self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
 
 
 #addinf functions to buttons and pulldown in custom curve tab
-        self.loopButton.clicked.connect(lambda : modify_curves.loop_anim(self.combo))
-        self.refreshButton.clicked.connect(lambda : self.refreshFunction())
-        self.combo.currentTextChanged.connect(lambda : self.refreshKnob(self.combo))
+        self.loop_button.clicked.connect(lambda : modify_curves.loop_anim(self.combo))
+        self.refresh_button.clicked.connect(lambda : self.refresh_function())
+        self.combo.currentTextChanged.connect(lambda : self.refresh_knob(self.combo))
 
         self.setLayout(self.master_layout)
         self.setGeometry(30, 30, 30, 15)
 
-        self.refreshKnob(self.combo)
+        self.refresh_knob(self.combo)
 
 #this functions updates the panel when a different node is selected from the original
-    def refreshFunction(self):
+    def refresh_function(self):
         # reuse existing logic to get knobs of current selected node.
         self.combo.clear()
         self.combo.addItems(utils.get_anim_knobs())
 
-        isAnim = utils.check_animation()
+        is_anim = utils.check_animation()
 
-        self.myff.clear()
-        self.mylf.clear()
+        self.my_first_frame.clear()
+        self.my_last_frame.clear()
 
-        if isAnim:
+        if is_anim:
 
-            firstFrame = utils.get_first_frame(self.combo)
-            self.myff.setText(str(firstFrame))
+            first_frame = utils.get_first_frame(self.combo)
+            self.my_first_frame.setText(str(first_frame))
 
-            lastFrame = utils.get_last_frame(self.combo)
-            self.mylf.setText(str(lastFrame))
+            last_frame = utils.get_last_frame(self.combo)
+            self.my_last_frame.setText(str(last_frame))
 
-        self.comboCurve.clear()
-        self.comboCurve.addItems(utils.get_all_knobs())
+        self.combo_curve.clear()
+        self.combo_curve.addItems(utils.get_all_knobs())
 
 #this function hides the parameters in the custom curve tab if the knob selected in the pulldown has an expression and shows them if it doesn't
-    def refreshKnob(self, k):
+    def refresh_knob(self, k):
 
-        isAnim = utils.check_animation()
+        is_anim = utils.check_animation()
 
-        self.myff.clear()
-        self.mylf.clear()
+        self.my_first_frame.clear()
+        self.my_last_frame.clear()
 
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
+        sel_knob = k.currentText()
+        act_knob = nuke.selectedNode().knob(sel_knob)
 
-        isString = utils.find_string_curve(actKnob, 'curve')
+        is_string = utils.find_string_curve(act_knob, 'curve')
 
-        if isAnim:
-            if not actKnob.hasExpression():
+        if is_anim:
+            if not act_knob.hasExpression():
 
-                firstFrame = utils.get_first_frame(self.combo)
-                self.myff.setText(str(firstFrame))
+                first_frame = utils.get_first_frame(self.combo)
+                self.my_first_frame.setText(str(first_frame))
 
-                lastFrame = utils.get_last_frame(self.combo)
-                self.mylf.setText(str(lastFrame))
+                last_frame = utils.get_last_frame(self.combo)
+                self.my_last_frame.setText(str(last_frame))
 
-            elif actKnob.hasExpression() == True and isString == 1:
+            elif act_knob.hasExpression() == True and is_string == 1:
 
-                firstFrame = utils.get_first_frame(self.combo)
-                self.myff.setText(str(firstFrame))
+                first_frame = utils.get_first_frame(self.combo)
+                self.my_first_frame.setText(str(first_frame))
 
-                lastFrame = utils.get_last_frame(self.combo)
-                self.mylf.setText(str(lastFrame))
+                last_frame = utils.get_last_frame(self.combo)
+                self.my_last_frame.setText(str(last_frame))
 
-        if actKnob.hasExpression() == True and isString == 0:
+        if act_knob.hasExpression() == True and is_string == 0:
 
             self.group2.hide()
-            self.offsetGroup.hide()
-            self.multGroup.hide()
-            self.loopGroup.hide()
-            self.loopGroupOffset.hide()
-            self.loopGroup2.hide()
-        elif actKnob.hasExpression() == True and isString == 1:
+            self.offset_group.hide()
+            self.mult_group.hide()
+            self.loop_group.hide()
+            self.loop_group_offset.hide()
+            self.loop_group2.hide()
+        elif act_knob.hasExpression() == True and is_string == 1:
 
             self.group2.show()
-            self.offsetGroup.show()
-            self.multGroup.show()
-            self.loopGroup.show()
-            self.loopGroupOffset.show()
-            self.loopGroup2.show()
-        elif not actKnob.hasExpression():
+            self.offset_group.show()
+            self.mult_group.show()
+            self.loop_group.show()
+            self.loop_group_offset.show()
+            self.loop_group2.show()
+        elif not act_knob.hasExpression():
 
             self.group2.show()
-            self.offsetGroup.show()
-            self.multGroup.show()
-            self.loopGroup.show()
-            self.loopGroupOffset.show()
-            self.loopGroup2.show()
+            self.offset_group.show()
+            self.mult_group.show()
+            self.loop_group.show()
+            self.loop_group_offset.show()
+            self.loop_group2.show()
 
-nuke.menu( 'Nuke' ).addCommand('Animation Manager', lambda: AnimationManagerBeta().show())
+registerWidgetAsPanel('main.AnimationManager', 'Animation Manager', 'animation_manager.id')
+#nuke.menu( 'Nuke' ).addCommand('Animation Manager', lambda: AnimationManager().show())
