@@ -1,141 +1,140 @@
 import nuke
 
 #this functions sets an integer to 1 if the substring is found in the sring
-def findStringCurve(currentKnob, searchString):
+def find_string_curve(current_knob, search_string):
 
-    stringFound = 0
-    origExpression = ''
+    original_expression = ''
     index = 0
-    if currentKnob.hasExpression():
-        origExpression = currentKnob.animation(index).expression()
+    if current_knob.hasExpression():
+        original_expression = current_knob.animation(index).expression()
 
-    if (origExpression.find(searchString) != -1):
-        stringFound = 1
+    if original_expression.find(search_string) != -1:
+        string_found = 1
     else:
-        stringFound = 0
+        string_found = 0
 
-    return stringFound
+    return string_found
 
 
 #this function gets the first frame of the animation in the selected knob
-def getFirstFrame(k):
+def get_first_frame(k):
 
-    selKnob = k.currentText()
-    actKnob = nuke.selectedNode().knob(selKnob)
+    sel_knob = k.currentText()
+    act_knob = nuke.selectedNode().knob(sel_knob)
 
-    xValueList = []
-    #if actKnob.hasExpression() == False:
-    #print "This knob has an expression in getFirstFrame"
-    animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
+    x_value_list = []
+    anim_curve = act_knob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
 
-    isString = findStringCurve(actKnob, 'curve')
+    is_string = find_string_curve(act_knob, 'curve')
 
-    if actKnob.hasExpression() == False:
-        for key in animCurve.keys():
-            xValue = key.x
-            xValueList.append(xValue)
+    if not act_knob.hasExpression():
+        for key in anim_curve.keys():
+            x_value = key.x
+            x_value_list.append(x_value)
 
-        return xValueList[0]
+        return x_value_list[0]
 
-    if actKnob.hasExpression() == True  and isString == 1:
-        for key in animCurve.keys():
-            xValue = key.x
-            xValueList.append(xValue)
+    if act_knob.hasExpression() == True and is_string == 1:
+        for key in anim_curve.keys():
+            x_value = key.x
+            x_value_list.append(x_value)
 
-        return xValueList[0]
+        return x_value_list[0]
+    return None
+
 
 #this function gets the last frame of the animation in the selected knob
-def getLastFrame(k):
+def get_last_frame(k):
 
-    selKnob = k.currentText()
-    actKnob = nuke.selectedNode().knob(selKnob)
+    sel_knob = k.currentText()
+    act_knob = nuke.selectedNode().knob(sel_knob)
 
-    #if actKnob.hasExpression() == False:
-    animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
-    xValueList = []
+    anim_curve = act_knob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
+    x_value_list = []
 
-    isString = findStringCurve(actKnob, 'curve')
+    is_string = find_string_curve(act_knob, 'curve')
 
-    if actKnob.hasExpression() == False:
-        for key in animCurve.keys():
-            xValue = key.x
-            xValueList.append(xValue)
+    if not act_knob.hasExpression():
+        for key in anim_curve.keys():
+            x_value = key.x
+            x_value_list.append(x_value)
 
-        return xValueList[-1]
+        return x_value_list[-1]
 
-    if actKnob.hasExpression() == True   and isString == 1:
-        for key in animCurve.keys():
-            xValue = key.x
-            xValueList.append(xValue)
+    if act_knob.hasExpression() == True and is_string == 1:
+        for key in anim_curve.keys():
+            x_value = key.x
+            x_value_list.append(x_value)
 
-        return xValueList[-1]
+        return x_value_list[-1]
+    return None
+
 
 #this function gets all the knobs in the selected node
-def getAllKnobs():
+def get_all_knobs():
 
     mynode = nuke.selectedNode()
 
-    knobList = []
-    animKnobList = []
-    delList = ['Mask','label', 'note_font','note_font_size','note_font_color','hide_input','cached','disable','dope_sheet','bookmark','postage_stamp','postage_stamp_frame','lifetimeStart','lifetimeEnd','useLifetime','tile_color','gl_color','name','help','knobChanged','onDestroy','updateUI','rootNodeUpdated','dope_sheet','icon','panel','indicators','onCreate','autolabel']
+    knob_list = []
+    del_list = ['Mask','label', 'note_font','note_font_size','note_font_color','hide_input','cached','disable','dope_sheet','bookmark','postage_stamp','postage_stamp_frame','lifetimeStart','lifetimeEnd','useLifetime','tile_color','gl_color','name','help','knobChanged','onDestroy','updateUI','rootNodeUpdated','dope_sheet','icon','panel','indicators','onCreate','autolabel']
     count = 0
 
     for i in mynode.knobs():
-        knobList.append(i)
+        knob_list.append(i)
         count = count + 1
 
-    knobList.sort()
+    knob_list.sort()
 
-    for i in range(len(delList)):
-        if delList[i] in knobList:
+    for i in range(len(del_list)):
+        if del_list[i] in knob_list:
 
-            knobList.pop(knobList.index(delList[i]))
+            knob_list.pop(knob_list.index(del_list[i]))
 
-    return knobList
+    return knob_list
 
 #this function gets all the keyframes of the selected animated knob
-def getAnimKeyFrame(k):
+def get_anim_keyframe(k):
 
-    selKnob = k.currentText()
-    actKnob = nuke.selectedNode().knob(selKnob)
-    animCurve = actKnob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
-    xValueList = []
+    sel_knob = k.currentText()
+    act_knob = nuke.selectedNode().knob(sel_knob)
+    anim_curve = act_knob.animation(0) #ANIMATION IN THE FIRST FIELD (X VALUE)
+    x_value_list = []
 
-    for key in animCurve.keys():
-        xValue = key.x
-        xValueList.append(xValue)
+    for key in anim_curve.keys():
+        x_value = key.x
+        x_value_list.append(x_value)
 
-    return xValueList
+    return x_value_list
 
 #this function gets all the animated knobs in the selected node
-def getAnimKnobs():
+def get_anim_knobs():
 
     mynode = nuke.selectedNode()
 
-    knobList = []
-    animKnobList = []
+    knob_list = []
+    anim_knob_list = []
     count = 0
     for i in mynode.knobs():
-        knobList.append(i)
-        if mynode.knob(knobList[count]).isAnimated():
-            animKnobList.append(i)
+        knob_list.append(i)
+        if mynode.knob(knob_list[count]).isAnimated():
+            anim_knob_list.append(i)
         count = count + 1
 
-    return animKnobList
+    return anim_knob_list
 
 #this function checks if there is a knob animated in the selected node
-def checkAnimation():
+def check_animation():
 
     mynode = nuke.selectedNode()
 
-    knobList = []
-    animKnobList = []
+    knob_list = []
+    anim_knob_list = []
     count = 0
     for i in mynode.knobs():
-        knobList.append(i)
-        if mynode.knob(knobList[count]).isAnimated():
-            animKnobList.append(i)
+        knob_list.append(i)
+        if mynode.knob(knob_list[count]).isAnimated():
+            anim_knob_list.append(i)
         count = count + 1
 
-    isAnimFun = bool(animKnobList)
-    return isAnimFun
+    is_anim_fun = bool(anim_knob_list)
+    return is_anim_fun

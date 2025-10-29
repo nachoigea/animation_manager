@@ -1,7 +1,6 @@
 #-------------------------------------------------------------------------------
 #Animation Manager by Nacho Igea
 # Complete python sript editor for Nuke
-#2021-2022
 #-------------------------------------------------------------------------------
 
 import nuke
@@ -11,10 +10,11 @@ import PySide2.QtGui as QtGui
 from PySide2.QtCore import Qt
 
 
-from nukescripts import panels
+#from nukescripts import panels
 
 import expression_curves
 import utils
+import modify_curves
 
 class AnimationManagerBeta(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -206,7 +206,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.groupButtons.setLayout(self.buttonsLayout)
 
 #getting the animated knobs of the selected node
-        knoblist = utils.getAnimKnobs()
+        knoblist = utils.get_anim_knobs()
         self.combo.addItems(knoblist)
 
     #adding groups to layouts
@@ -243,17 +243,17 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.master_layout.addWidget(self.signLabel)
 
 #getting all the knobs in the selected node
-        allknoblist = utils.getAllKnobs()
+        allknoblist = utils.get_all_knobs()
         self.comboCurve.addItems(allknoblist)
 #setting values for the inputs
 
-        isAnim = utils.checkAnimation()
-        if isAnim == True:
+        isAnim = utils.check_animation()
+        if isAnim:
 
-            firstFrame = utils.getFirstFrame(self.combo)
+            firstFrame = utils.get_first_frame(self.combo)
             self.myff.setText(str(firstFrame))
 
-            lastFrame = utils.getLastFrame(self.combo)
+            lastFrame = utils.get_last_frame(self.combo)
             self.mylf.setText(str(lastFrame))
 
         self.offsetValue.setText(str(0))
@@ -269,27 +269,47 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         self.mylfCurve.setText(str(1))
 
 #adding functions to text boxes in custom curves tab
-        self.offsetValue.returnPressed.connect(lambda : self.addOffsetEdit(self.combo, self.offsetValue))
-        self.multValue.returnPressed.connect(lambda : self.multiplyEdit(self.combo, self.multValue))
-        self.myff.returnPressed.connect(lambda : self.adaptAnimFF(self.myff, self.combo))
-        self.mylf.returnPressed.connect(lambda : self.adaptAnimLF(self.mylf, self.combo))
+        self.offsetValue.returnPressed.connect(lambda : modify_curves.add_offset_edit(self.combo, self.offsetValue))
+        self.multValue.returnPressed.connect(lambda : modify_curves.multiply_edit(self.combo, self.multValue))
+        self.myff.returnPressed.connect(lambda : modify_curves.adapt_anim_first_frame(self.myff, self.combo))
+        self.mylf.returnPressed.connect(lambda : modify_curves.adapt_anim_last_frame(self.mylf, self.combo))
 
-        self.loopSlider.returnPressed.connect(lambda : self.offsetAnim(self.combo, self.loopSlider, self.loopmylf, self.loopmyff))
-        self.loopmyff.returnPressed.connect(lambda : self.offsetAnim(self.combo, self.loopSlider, self.loopmylf, self.loopmyff))
-        self.loopmylf.returnPressed.connect(lambda : self.offsetAnim(self.combo, self.loopSlider, self.loopmylf, self.loopmyff))
+        self.loopSlider.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        ))
+        self.loopmyff.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        ))
+        self.loopmylf.returnPressed.connect(lambda : modify_curves.offset_anim(
+            self.combo, self.loopSlider, self.loopmylf, self.loopmyff
+        ))
 
 #adding functions to push buttons in expression curve tab
-        preset_curves= expression_curves.Curves(self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve)
-        self.randomButton.clicked.connect(lambda : preset_curves.random_curve())
-        self.triangleButton.clicked.connect(lambda : preset_curves.triangle_curve())
-        self.sineButton.clicked.connect(lambda : preset_curves.sin_curve())
-        self.squareButton.clicked.connect(lambda : preset_curves.square_curve())
-        self.sawtoothButton.clicked.connect(lambda : preset_curves.sawtooth_curve())
-        self.bounceButton.clicked.connect(lambda: preset_curves.bounce_curve())
+        preset_curves= expression_curves.Curves(
+            self.comboCurve, self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        )
+        self.randomButton.clicked.connect(lambda : preset_curves.random_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
+        self.triangleButton.clicked.connect(lambda : preset_curves.triangle_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
+        self.sineButton.clicked.connect(lambda : preset_curves.sin_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
+        self.squareButton.clicked.connect(lambda : preset_curves.square_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
+        self.sawtoothButton.clicked.connect(lambda : preset_curves.sawtooth_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
+        self.bounceButton.clicked.connect(lambda: preset_curves.bounce_curve(
+            self.wavelengthValue, self.offsetValueCurve, self.mylfCurve, self.myffCurve
+        ))
 
 
 #addinf functions to buttons and pulldown in custom curve tab
-        self.loopButton.clicked.connect(lambda : self.loopAnim(self.combo))
+        self.loopButton.clicked.connect(lambda : modify_curves.loop_anim(self.combo))
         self.refreshButton.clicked.connect(lambda : self.refreshFunction())
         self.combo.currentTextChanged.connect(lambda : self.refreshKnob(self.combo))
 
@@ -302,28 +322,28 @@ class AnimationManagerBeta(QtWidgets.QWidget):
     def refreshFunction(self):
         # reuse existing logic to get knobs of current selected node.
         self.combo.clear()
-        self.combo.addItems(utils.getAnimKnobs())
+        self.combo.addItems(utils.get_anim_knobs())
 
-        isAnim = utils.checkAnimation()
+        isAnim = utils.check_animation()
 
         self.myff.clear()
         self.mylf.clear()
 
-        if isAnim == True:
+        if isAnim:
 
-            firstFrame = utils.getFirstFrame(self.combo)
+            firstFrame = utils.get_first_frame(self.combo)
             self.myff.setText(str(firstFrame))
 
-            lastFrame = utils.getLastFrame(self.combo)
+            lastFrame = utils.get_last_frame(self.combo)
             self.mylf.setText(str(lastFrame))
 
         self.comboCurve.clear()
-        self.comboCurve.addItems(utils.getAllKnobs())
+        self.comboCurve.addItems(utils.get_all_knobs())
 
 #this function hides the parameters in the custom curve tab if the knob selected in the pulldown has an expression and shows them if it doesn't
     def refreshKnob(self, k):
 
-        isAnim = utils.checkAnimation()
+        isAnim = utils.check_animation()
 
         self.myff.clear()
         self.mylf.clear()
@@ -331,23 +351,23 @@ class AnimationManagerBeta(QtWidgets.QWidget):
         selKnob = k.currentText()
         actKnob = nuke.selectedNode().knob(selKnob)
 
-        isString = utils.findStringCurve(actKnob, 'curve')
+        isString = utils.find_string_curve(actKnob, 'curve')
 
-        if isAnim == True:
-            if actKnob.hasExpression() == False:
+        if isAnim:
+            if not actKnob.hasExpression():
 
-                firstFrame = utils.getFirstFrame(self.combo)
+                firstFrame = utils.get_first_frame(self.combo)
                 self.myff.setText(str(firstFrame))
 
-                lastFrame = utils.getLastFrame(self.combo)
+                lastFrame = utils.get_last_frame(self.combo)
                 self.mylf.setText(str(lastFrame))
 
             elif actKnob.hasExpression() == True and isString == 1:
 
-                firstFrame = utils.getFirstFrame(self.combo)
+                firstFrame = utils.get_first_frame(self.combo)
                 self.myff.setText(str(firstFrame))
 
-                lastFrame = utils.getLastFrame(self.combo)
+                lastFrame = utils.get_last_frame(self.combo)
                 self.mylf.setText(str(lastFrame))
 
         if actKnob.hasExpression() == True and isString == 0:
@@ -366,7 +386,7 @@ class AnimationManagerBeta(QtWidgets.QWidget):
             self.loopGroup.show()
             self.loopGroupOffset.show()
             self.loopGroup2.show()
-        elif actKnob.hasExpression() == False:
+        elif not actKnob.hasExpression():
 
             self.group2.show()
             self.offsetGroup.show()
@@ -374,212 +394,5 @@ class AnimationManagerBeta(QtWidgets.QWidget):
             self.loopGroup.show()
             self.loopGroupOffset.show()
             self.loopGroup2.show()
-
-#this function adds the introduced offset to the whole custom curve
-    def addOffsetEdit(self,k, offsetSliderFun):
-
-            keyList = utils.getAnimKeyFrame(k)
-            if offsetSliderFun.text():
-                addedOffset = offsetSliderFun.text()
-            else:
-                addedOffset = str(0)
-
-            min_prev_frame = keyList[0]
-            max_prev_frame = keyList[-1]
-
-            selKnob = k.currentText()
-            actKnob = nuke.selectedNode().knob(selKnob)
-
-            animCurve = actKnob.animation( 0 ) #ANIMATION IN THE FIRST FIELD (X VALUE)
-
-            x_pos = []
-            y_pos = []
-            for key in animCurve.keys():
-
-                xValue = int(key.x)
-                yValue = float(key.y)
-                x_pos.append(xValue)
-                y_pos.append(yValue)
-                animCurve.clear()
-
-            offset = []
-            actKnob.setAnimated()
-
-            for c in range(len(x_pos)):
-
-                suma = (y_pos[c] + float(addedOffset))
-                offset.append(suma)
-                actKnob.setValueAt(offset[c], x_pos[c])
-                c = c + 1
-
-            return offset
-
-#this function multiplies all y values of the keyframes with the inctroduced factor
-    def multiplyEdit(self,k, multiplyFun):
-
-            keyList = utils.getAnimKeyFrame(k)
-
-            if multiplyFun.text():
-                addedMult = multiplyFun.text()
-            else:
-                addedMult = str(0)
-
-            min_prev_frame = keyList[0]
-            max_prev_frame = keyList[-1]
-
-            selKnob = k.currentText()
-            actKnob = nuke.selectedNode().knob(selKnob)
-
-            animCurve = actKnob.animation( 0 ) #ANIMATION IN THE FIRST FIELD (X VALUE)
-
-            x_pos = []
-            y_pos = []
-            for key in animCurve.keys():
-
-                xValue = int(key.x)
-                yValue = float(key.y)
-                x_pos.append(xValue)
-                y_pos.append(yValue)
-                animCurve.clear()
-
-            multList = []
-            actKnob.setAnimated()
-
-            for c in range(len(x_pos)):
-
-                mult = (y_pos[c] * float(addedMult))
-                multList.append(mult)
-                actKnob.setValueAt(multList[c], x_pos[c])
-                c = c + 1
-
-            return multList
-
-#this function changes the first keyframe while adapting the rest of the keyframes of the curve
-    def adaptAnimFF(self, myff,k):
-
-        keyList = utils.getAnimKeyFrame(k)
-
-        min_set_frame = myff.text()
-        #max_set_frame = mylf.text()
-
-        min_prev_frame = keyList[0]
-        max_prev_frame = keyList[-1]
-
-        original_range = max_prev_frame - min_prev_frame
-        new_range = max_prev_frame - int(min_set_frame)
-        kmult = new_range / float(original_range)
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        animCurve = actKnob.animation( 0 ) #ANIMATION IN THE FIRST FIELD (X VALUE)
-
-        x_pos = []
-        y_pos = []
-        for key in animCurve.keys():
-
-            xValue = int(key.x)
-            yValue = float(key.y)
-            x_pos.append(xValue)
-            y_pos.append(yValue)
-            animCurve.clear()
-
-        offset = []
-        actKnob.setAnimated()
-
-        for c in range(len(x_pos)):
-            suma = (x_pos[c] - min_prev_frame)*(kmult)
-            final_key = int(min_set_frame) + int(suma)
-            entero = int(final_key)
-            offset.append(entero)
-            actKnob.setValueAt(y_pos[c], offset[c])
-            c = c + 1
-
-        return entero
-
-#this function changes the last keyframe while adapting the rest of the keyframes of the curve
-    def adaptAnimLF(self, mylf,k):
-
-        keyList = utils.getAnimKeyFrame(k)
-
-        #min_set_frame = myff.text()
-        max_set_frame = mylf.text()
-
-        min_prev_frame = keyList[0]
-        max_prev_frame = keyList[-1]
-
-        original_range = max_prev_frame - min_prev_frame
-        new_range = int(max_set_frame) - min_prev_frame
-        kmult = new_range / float(original_range)
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        animCurve = actKnob.animation( 0 ) #ANIMATION IN THE FIRST FIELD (X VALUE)
-
-        x_pos = []
-        y_pos = []
-        for key in animCurve.keys():
-
-            xValue = int(key.x)
-            yValue = float(key.y)
-            x_pos.append(xValue)
-            y_pos.append(yValue)
-            animCurve.clear()
-
-        offset = []
-        actKnob.setAnimated()
-
-        for c in range(len(x_pos)):
-            suma = (x_pos[c] - min_prev_frame)*(kmult)
-            final_key = int(min_prev_frame) + int(suma)
-            entero = int(final_key)
-            offset.append(entero)
-            actKnob.setValueAt(y_pos[c], offset[c])
-            c = c + 1
-
-        return entero
-
-    def offsetAnim(self, k, loopOffset, lastframeoffset, firstframeoffset):
-
-        loopFirstFrame = utils.getFirstFrame(k)
-        loopLastFrame = utils.getLastFrame(k)
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        strLff = str(loopFirstFrame)
-        strLlf = str(loopLastFrame)
-
-        if loopOffset.text() == '':
-
-            frameOffset = str(0)
-        else:
-            frameOffset = loopOffset.text()
-        if lastframeoffset.text() == '':
-            paramlastframeoffset = str(0)
-
-        else:
-            paramlastframeoffset = lastframeoffset.text()
-        if firstframeoffset.text() == '':
-
-            paramfirstframeoffset = str(0)
-        else:
-            paramfirstframeoffset = firstframeoffset.text()
-
-        actKnob.setExpression("curve(((frame-" + strLff +"+" + frameOffset + ")%(" + strLlf +"-" + strLff + "-" + paramfirstframeoffset + "+" + paramlastframeoffset + "+1))+" + strLff +" )")
-
-    def loopAnim(self, k):
-
-        loopFirstFrame = utils.getFirstFrame(k)
-        loopLastFrame = utils.getLastFrame(k)
-
-        selKnob = k.currentText()
-        actKnob = nuke.selectedNode().knob(selKnob)
-
-        strLff = str(loopFirstFrame)
-        strLlf = str(loopLastFrame)
-
-        actKnob.setExpression("curve(((frame-" + strLff +")%(" + strLlf +"-" + strLff +"+1))+" + strLff +" )")
 
 nuke.menu( 'Nuke' ).addCommand('Animation Manager', lambda: AnimationManagerBeta().show())
