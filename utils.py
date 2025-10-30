@@ -20,7 +20,6 @@ def find_string_curve(current_knob, search_string):
 
     return string_found
 
-#this function gets the first frame of the animation in the selected knob
 def get_first_frame(k):
     """Get the first frame of the animation in the selected knob
 
@@ -51,7 +50,6 @@ def get_first_frame(k):
         return x_value_list[0]
     return None
 
-#this function gets the last frame of the animation in the selected knob
 def get_last_frame(k):
     """Get the last frame of the animation in the selected knob
 
@@ -150,7 +148,6 @@ def get_anim_knobs():
         nuke.message("Please select a node")
         return None
 
-#this function checks if there is a knob animated in the selected node
 def check_animation():
     """Check if there is a knob animated in the selected node
 

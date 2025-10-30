@@ -336,7 +336,6 @@ class AnimationManager(QtWidgets.QWidget):
 
         self.refresh_knob(self.combo)
 
-
     def refresh_function(self):
         """Update the panel when a different node is selected from the original
 

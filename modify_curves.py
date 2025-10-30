@@ -54,7 +54,6 @@ def offset_anim(k, loop_offset, last_frame_offset, first_frame_offset):
                           f"+1))+ {str(loop_first_frame)} )"
                           )
 
-#this function changes the last keyframe while adapting the rest of the keyframes of the curve
 def adapt_anim_last_frame(my_last_frame,k):
     """Adapt the aimation to change the last frame, rest of the frames are computed accordingly
 
@@ -102,7 +101,6 @@ def adapt_anim_last_frame(my_last_frame,k):
 
     return int_final_key
 
-#this function changes the first keyframe while adapting the rest of the keyframes of the curve
 def adapt_anim_first_frame(my_first_frame,k):
     """Adapt the aimation to change the first frame, rest of the frames are computed accordingly
 
@@ -150,7 +148,6 @@ def adapt_anim_first_frame(my_first_frame,k):
 
     return int_final_key
 
-#this function multiplies all y values of the keyframes with the inctroduced factor
 def multiply_edit(k, multiply_fun):
     """Multiply all y values of the keyframes with the introduced factor
 
@@ -192,7 +189,6 @@ def multiply_edit(k, multiply_fun):
 
     return mult_list
 
-#this function adds the introduced offset to the whole custom curve
 def add_offset_edit(k, offset_slider_fun):
     """Add the introduced offset to the whole custom curve
 
