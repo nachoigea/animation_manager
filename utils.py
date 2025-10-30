@@ -1,7 +1,12 @@
 import nuke
 
-#this functions sets an integer to 1 if the substring is found in the sring
 def find_string_curve(current_knob, search_string):
+    """Find substring in a given string coming from a node knob
+        Parameters:
+            current_knob: knob given to find the substring
+            search_string: substring to find
+        Returns: 1 if substring is found 0 if substring is not found
+    """
 
     original_expression = ''
     index = 0
@@ -15,9 +20,13 @@ def find_string_curve(current_knob, search_string):
 
     return string_found
 
-
 #this function gets the first frame of the animation in the selected knob
 def get_first_frame(k):
+    """Get the first frame of the animation in the selected knob
+
+    :param k: knob where the animation is found
+    :return: list with the animation values of the knob
+    """
 
     sel_knob = k.currentText()
     act_knob = nuke.selectedNode().knob(sel_knob)
@@ -41,10 +50,14 @@ def get_first_frame(k):
 
         return x_value_list[0]
     return None
-
 
 #this function gets the last frame of the animation in the selected knob
 def get_last_frame(k):
+    """Get the last frame of the animation in the selected knob
+
+    :param k: knob where the animation is found
+    :return: list with the animation values of the knob
+    """
 
     sel_knob = k.currentText()
     act_knob = nuke.selectedNode().knob(sel_knob)
@@ -69,9 +82,11 @@ def get_last_frame(k):
         return x_value_list[-1]
     return None
 
-
-#this function gets all the knobs in the selected node
 def get_all_knobs():
+    """Get all knobs in the selected knob
+
+    :return: list of knob names
+    """
 
     mynode = nuke.selectedNode()
 
@@ -92,8 +107,12 @@ def get_all_knobs():
 
     return knob_list
 
-#this function gets all the keyframes of the selected animated knob
 def get_anim_keyframe(k):
+    """Get all the keyframes of the selected animated knob
+
+    :param k: knob where the keyframes are found
+    :return: list with the keyframes of the knob
+    """
 
     sel_knob = k.currentText()
     act_knob = nuke.selectedNode().knob(sel_knob)
@@ -106,24 +125,37 @@ def get_anim_keyframe(k):
 
     return x_value_list
 
-#this function gets all the animated knobs in the selected node
 def get_anim_knobs():
+    """
+    Get all the animated knobs in the selected node
+    :return: list with the animated knobs of the node
+    """
 
-    mynode = nuke.selectedNode()
+    try:
+        mynode = nuke.selectedNode()
 
-    knob_list = []
-    anim_knob_list = []
-    count = 0
-    for i in mynode.knobs():
-        knob_list.append(i)
-        if mynode.knob(knob_list[count]).isAnimated():
-            anim_knob_list.append(i)
-        count = count + 1
+        knob_list = []
+        anim_knob_list = []
+        count = 0
+        for i in mynode.knobs():
+            knob_list.append(i)
+            if mynode.knob(knob_list[count]).isAnimated():
+                anim_knob_list.append(i)
+            count = count + 1
 
-    return anim_knob_list
+        return anim_knob_list
+
+    except ValueError:
+
+        nuke.message("Please select a node")
+        return None
 
 #this function checks if there is a knob animated in the selected node
 def check_animation():
+    """Check if there is a knob animated in the selected node
+
+    :return: True if there is a knob animated in the selected node
+    """
 
     mynode = nuke.selectedNode()
 

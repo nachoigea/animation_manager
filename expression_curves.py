@@ -1,7 +1,26 @@
 import nuke
 
 class Curves:
+    """
+    A Class representing the expression curves that can be generated
+
+    Attributes:
+        k: knob selected to curve in
+        wavelenth_str: wavelength of the curve
+        offset_str: offset in the x axis the curve can have
+        max_str: maximum value the curve can reach
+        min_str: minimum value the curve can reach
+    """
+
     def __init__(self, k, wavelength_str, offset_str, max_str, min_str):
+        """Initialize the class
+
+        :param k: knob selected to curve in
+        :param wavelength_str: wavelength of the curve
+        :param offset_str: offset in the x axis the curve can have
+        :param max_str: maximum value the curve can reach
+        :param min_str: minimum value the curve can reach
+        """
 
         self.k = k
         self.wavelength_str = wavelength_str
@@ -9,28 +28,15 @@ class Curves:
         self.max_str = max_str
         self.min_str = min_str
 
-        '''if wavelength_str.text() == '':
-            self.wavelength_str = str(1)
-        else:
-            self.wavelength_str = wavelength_str.text()
-        print(f"wavelength is {self.wavelength_str}")
-        if offset_str.text() == '':
-            self.offset_str = str(0)
-        else:
-            self.offset_str = offset_str.text()
-
-        if max_str.text() == '':
-            self.max_str = str(1)
-        else:
-            self.max_str = max_str.text()
-
-        if min_str.text() == '':
-            self.min_str = str(0)
-        else:
-            self.min_str = min_str.text()'''
-
     def update_expression_values(self, wavelength_str, offset_str, max_str, min_str):
+        """Update the expression curve values depending on the panel values
 
+        :param wavelength_str: wavelength of the curve
+        :param offset_str: offset in the x-axis the curve can have
+        :param max_str: maximum value the curve can reach
+        :param min_str: minimum value the curve can reach
+
+        """
 
         self.wavelength_str = wavelength_str.text()
         self.offset_str = offset_str.text()
@@ -38,6 +44,8 @@ class Curves:
         self.min_str = min_str.text()
 
     def bounce_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression bounce curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
@@ -49,6 +57,8 @@ class Curves:
                                )
 
     def sawtooth_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression sawtooth curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
@@ -60,6 +70,8 @@ class Curves:
                                )
 
     def triangle_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression triangle curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
@@ -71,6 +83,8 @@ class Curves:
                                )
 
     def random_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression random curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
@@ -82,6 +96,8 @@ class Curves:
                                )
 
     def square_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression square curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)
@@ -91,6 +107,8 @@ class Curves:
         act_knob.setExpression(f"int(sin(2*pi*(frame+ {self.offset_str} )/ {self.wavelength_str} )+1)/2 *( {self.max_str} - {self.min_str} )*2+ {self.min_str}")
 
     def sin_curve(self, wavelength_str, offset_str, max_str, min_str):
+        """Generate the expression sin curve
+        """
 
         selected_knob = self.k.currentText()
         act_knob = nuke.selectedNode().knob(selected_knob)

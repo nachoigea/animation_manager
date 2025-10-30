@@ -14,7 +14,14 @@ import utils
 import modify_curves
 
 class AnimationManager(QtWidgets.QWidget):
+    """A Class representing the Animation Manager panel
+    """
+
     def __init__(self, parent=None):
+        """Initialize the Animation Manager
+
+        :param parent:
+        """
         QtWidgets.QWidget.__init__(self, parent)
 
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -22,15 +29,18 @@ class AnimationManager(QtWidgets.QWidget):
         #creation of the tabs
         self.tab = QtWidgets.QTabWidget()
         self.tab1 = QtWidgets.QWidget()
-#custom curve tab
-    #creation of the graphic elements
+
+        #custom curve tab
+        #creation of the graphic elements
         self.combo = QtWidgets.QComboBox()
         self.combo.setFixedWidth(150)
-    #knob group
+
+        #knob group
         self.label = QtWidgets.QLabel("Knob")
         self.group1 = QtWidgets.QGroupBox("Select animated knob")
         self.refresh_button = QtWidgets.QPushButton("Update node")
-    #frame range group
+
+        #frame range group
         self.group2 = QtWidgets.QGroupBox("New frame range")
         self.my_first_frame = QtWidgets.QLineEdit()
         self.my_first_frame.setAlignment(QtCore.Qt.AlignLeft)
@@ -40,19 +50,20 @@ class AnimationManager(QtWidgets.QWidget):
         self.label_my_first_frame = QtWidgets.QLabel("First frame")
         self.label_my_first_frame.setIndent(1)
         self.label_my_last_frame = QtWidgets.QLabel("Last frame")
-    #offset group
+
+        #offset group
         self.offset_group = QtWidgets.QGroupBox("Keyframes offset")
         self.offset_label = QtWidgets.QLabel("Offset")
         self.offset_value = QtWidgets.QLineEdit()
         self.offset_value.setFixedWidth(50)
 
-    #multiply group
+        #multiply group
         self.mult_group = QtWidgets.QGroupBox("Keyframes multiply")
         self.mult_label = QtWidgets.QLabel("Multiply")
         self.mult_value = QtWidgets.QLineEdit()
         self.mult_value.setFixedWidth(50)
 
-    #loop group
+        #loop group
         self.loop_group = QtWidgets.QGroupBox("")
         self.loop_group_offset = QtWidgets.QGroupBox("")
         self.loop_group2 = QtWidgets.QGroupBox("Loop Animation")
@@ -70,7 +81,8 @@ class AnimationManager(QtWidgets.QWidget):
         self.loop_label_my_first_frame = QtWidgets.QLabel("Offset Loop First frame")
         self.loop_label_my_first_frame.setIndent(1)
         self.loop_label_my_last_frame = QtWidgets.QLabel("Offset Loop Last frame")
-    #creation of layouts
+
+        #creation of layouts
         self.layout1 = QtWidgets.QVBoxLayout()
         self.layout1.setAlignment(QtCore.Qt.AlignTop)
         self.in_layout = QtWidgets.QHBoxLayout()
@@ -86,7 +98,8 @@ class AnimationManager(QtWidgets.QWidget):
         self.loop_frame_range_layout = QtWidgets.QHBoxLayout()
         self.loop_frame_range_layout.addStretch(2)
         self.loop_frame_range_layout.setAlignment(QtCore.Qt.AlignLeft)
-    #adding groups to layouts
+
+        #adding groups to layouts
         self.layout1.addWidget(self.group1)
         self.layout1.addWidget(self.group2)
         self.layout1.addWidget(self.offset_group)
@@ -130,12 +143,12 @@ class AnimationManager(QtWidgets.QWidget):
 
         self.loop_group2.setLayout(self.loop_layout)
 
-    #adding tab to layout
+         #adding tab to layout
         self.tab1.setLayout(self.layout1)
         self.tab2 = QtWidgets.QWidget()
 
-#expression curve tab
-    #creation of the graphic elements
+        #expression curve tab
+        #creation of the graphic elements
         self.combo_curve = QtWidgets.QComboBox()
         self.combo_curve.setFixedWidth(150)
         self.label_curve = QtWidgets.QLabel("Knob")
@@ -159,7 +172,8 @@ class AnimationManager(QtWidgets.QWidget):
         self.label_my_first_frameCurve = QtWidgets.QLabel("Minimum value")
         self.label_my_first_frameCurve.setIndent(1)
         self.label_my_last_frameCurve = QtWidgets.QLabel("Maximum value")
-    #creation of buttons
+
+        #creation of buttons
         self.group_buttons = QtWidgets.QGroupBox("Generate the curve")
         self.random_button = QtWidgets.QPushButton("Random")
         self.triangle_button = QtWidgets.QPushButton("Triangle")
@@ -167,13 +181,15 @@ class AnimationManager(QtWidgets.QWidget):
         self.square_button = QtWidgets.QPushButton("Square")
         self.sawtooth_button = QtWidgets.QPushButton("Sawtooth")
         self.bounce_button = QtWidgets.QPushButton("Bounce")
-    #creation of layouts
+
+        #creation of layouts
         self.in_layout_curve = QtWidgets.QHBoxLayout()
         self.in_layout_curve.addWidget(self.label_curve)
         self.in_layout_curve.addWidget(self.combo_curve)
         self.group1_curve.setLayout(self.in_layout_curve)
         self.in_layout_curve.setAlignment(QtCore.Qt.AlignTop)
-    #adding graphic elements to layouts
+
+        #adding graphic elements to layouts
         self.wavelength_layout = QtWidgets.QHBoxLayout()
         self.wavelength_layout.addWidget(self.wavelength_label)
         self.wavelength_layout.addWidget(self.wavelength_value)
@@ -181,13 +197,12 @@ class AnimationManager(QtWidgets.QWidget):
         self.offset_curve_layout = QtWidgets.QHBoxLayout()
         self.offset_curve_layout.addWidget(self.offset_label_curve)
         self.offset_curve_layout.addWidget(self.offset_valueCurve)
-        #self.offset_curve_layout.addWidget(self.offsetSliderCurve)
 
-        self.height_curve_cayout = QtWidgets.QHBoxLayout()
-        self.height_curve_cayout.addWidget(self.label_my_first_frameCurve)
-        self.height_curve_cayout.addWidget(self.my_first_frameCurve)
-        self.height_curve_cayout.addWidget(self.label_my_last_frameCurve)
-        self.height_curve_cayout.addWidget(self.my_last_frameCurve)
+        self.height_curve_layout = QtWidgets.QHBoxLayout()
+        self.height_curve_layout.addWidget(self.label_my_first_frameCurve)
+        self.height_curve_layout.addWidget(self.my_first_frameCurve)
+        self.height_curve_layout.addWidget(self.label_my_last_frameCurve)
+        self.height_curve_layout.addWidget(self.my_last_frameCurve)
 
         self.buttons_layout = QtWidgets.QGridLayout()
         self.buttons_layout.addWidget(self.random_button, 0,0)
@@ -199,14 +214,19 @@ class AnimationManager(QtWidgets.QWidget):
 
         self.group2_curve.setLayout(self.wavelength_layout)
         self.group_offset_curve.setLayout(self.offset_curve_layout)
-        self.group_height.setLayout(self.height_curve_cayout)
+        self.group_height.setLayout(self.height_curve_layout)
         self.group_buttons.setLayout(self.buttons_layout)
 
-#getting the animated knobs of the selected node
-        knob_list = utils.get_anim_knobs()
-        self.combo.addItems(knob_list)
+        #getting the animated knobs of the selected node
+        try:
+            knob_list = utils.get_anim_knobs()
+            self.combo.addItems(knob_list)
 
-    #adding groups to layouts
+            current_node_name = nuke.selectedNode().name()
+        except ValueError:
+            nuke.message("Please select a node")
+
+        #adding groups to layouts
         self.layout2 = QtWidgets.QVBoxLayout()
         self.layout2.addWidget(self.group1_curve)
 
@@ -218,18 +238,20 @@ class AnimationManager(QtWidgets.QWidget):
         self.layout2.addStretch(2)
         self.tab2.setLayout(self.layout2)
 
-#adding tabs to master layout
+        #adding tabs to master layout
         self.tab.addTab(self.tab1, "Adapt custom curve")
         self.tab.addTab(self.tab2, "Curve presets")
 
-        self.title_label = QtWidgets.QLabel("Press to update the node")
+        self.current_node_label = QtWidgets.QLabel(current_node_name)
+        self.current_node_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.current_node_label.setStyleSheet("color: rgb(223, 202, 98); font: bold 28px")
         self.space_label = QtWidgets.QLabel(" ")
         self.space_label2 = QtWidgets.QLabel(" ")
         self.tabs_label = QtWidgets.QLabel("Generate or modify your animation curves")
         self.sign_label = QtWidgets.QLabel("by Nacho Igea")
 
         self.master_layout = QtWidgets.QVBoxLayout()
-        self.master_layout.addWidget(self.title_label)
+        self.master_layout.addWidget(self.current_node_label)
         self.master_layout.addWidget(self.space_label)
         self.master_layout.addWidget(self.refresh_button)
         self.master_layout.addWidget(self.space_label2)
@@ -239,11 +261,11 @@ class AnimationManager(QtWidgets.QWidget):
         self.master_layout.addWidget(self.space_label2)
         self.master_layout.addWidget(self.sign_label)
 
-#getting all the knobs in the selected node
+        #getting all the knobs in the selected node
         all_knob_list = utils.get_all_knobs()
         self.combo_curve.addItems(all_knob_list)
-#setting values for the inputs
 
+        #setting values for the inputs
         is_anim = utils.check_animation()
         if is_anim:
 
@@ -265,7 +287,7 @@ class AnimationManager(QtWidgets.QWidget):
         self.my_first_frameCurve.setText(str(0))
         self.my_last_frameCurve.setText(str(1))
 
-#adding functions to text boxes in custom curves tab
+        #adding functions to text boxes in custom curves tab
         self.offset_value.returnPressed.connect(lambda : modify_curves.add_offset_edit(self.combo, self.offset_value))
         self.mult_value.returnPressed.connect(lambda : modify_curves.multiply_edit(self.combo, self.mult_value))
         self.my_first_frame.returnPressed.connect(lambda : modify_curves.adapt_anim_first_frame(self.my_first_frame, self.combo))
@@ -281,7 +303,7 @@ class AnimationManager(QtWidgets.QWidget):
             self.combo, self.loop_slider, self.loop_my_last_frame, self.loop_my_first_frame
         ))
 
-#adding functions to push buttons in expression curve tab
+        #adding functions to push buttons in expression curve tab
         preset_curves= expression_curves.Curves(
             self.combo_curve, self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         )
@@ -304,8 +326,7 @@ class AnimationManager(QtWidgets.QWidget):
             self.wavelength_value, self.offset_valueCurve, self.my_last_frameCurve, self.my_first_frameCurve
         ))
 
-
-#addinf functions to buttons and pulldown in custom curve tab
+        #addinf functions to buttons and pulldown in custom curve tab
         self.loop_button.clicked.connect(lambda : modify_curves.loop_anim(self.combo))
         self.refresh_button.clicked.connect(lambda : self.refresh_function())
         self.combo.currentTextChanged.connect(lambda : self.refresh_knob(self.combo))
@@ -315,8 +336,11 @@ class AnimationManager(QtWidgets.QWidget):
 
         self.refresh_knob(self.combo)
 
-#this functions updates the panel when a different node is selected from the original
+
     def refresh_function(self):
+        """Update the panel when a different node is selected from the original
+
+        """
         # reuse existing logic to get knobs of current selected node.
         self.combo.clear()
         self.combo.addItems(utils.get_anim_knobs())
@@ -337,8 +361,15 @@ class AnimationManager(QtWidgets.QWidget):
         self.combo_curve.clear()
         self.combo_curve.addItems(utils.get_all_knobs())
 
-#this function hides the parameters in the custom curve tab if the knob selected in the pulldown has an expression and shows them if it doesn't
+        self.current_node_label.clear()
+        self.current_node_label.setText(nuke.selectedNode().name())
+
     def refresh_knob(self, k):
+        """Hide the parameters in the custom curve tab if the knob selected in the pulldown has an expression
+            and shows them if it doesn't
+
+        :param k: knob to perform the action
+        """
 
         is_anim = utils.check_animation()
 
